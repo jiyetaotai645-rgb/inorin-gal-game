@@ -1191,8 +1191,9 @@
           if (spawnTimer <= 0) { spawn(); spawnTimer = spawnInterval(); }
 
           // catch geometry: catch zone is the basket near the bottom
+          // hitbox is only the upper half of the zone; the lower half does not catch
           var catchTop = stageH() - CATCH_LINE_FROM_BOTTOM - 26;
-          var catchBottom = stageH() - 6;
+          var catchBottom = catchTop + ((stageH() - 6) - catchTop) / 2;
           var pLeft = playerX - PLAYER_W / 2 + 4;
           var pRight = playerX + PLAYER_W / 2 - 4;
 
