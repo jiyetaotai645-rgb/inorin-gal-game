@@ -1,0 +1,1331 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="data:," />
+    <title>いのりんをギャルにしよう！！</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;800&family=DotGothic16&family=Kaisei+Decol:wght@700&family=Yusei+Magic&family=Zen+Kaku+Gothic+New:wght@700;900&family=Shippori+Mincho:wght@700;800&display=swap" rel="stylesheet" />
+    <style>
+      button, [role="button"] { min-height: 2.75rem; }
+
+      :root {
+        --bg: #fff5f8;
+        --panel: #ffffff;
+        --ink: #2b1220;
+        --ink-soft: #6d5462;
+        --line: #f3c9d8;
+        --pink: #ff2e7e;
+        --pink-deep: #d6006d;
+        --yellow: #ffc400;
+        --orange: #ff7a00;
+        --sky: #38bdf8;
+        --danger: #e11d48;
+        --stage-top: #ffe3ef;
+        --stage-mid: #fff6e9;
+        --stage-bottom: #fffdf5;
+        --stage-line: rgba(214, 0, 109, .10);
+        --shadow: 0 10px 30px rgba(214, 0, 109, .14);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #1d0f18;
+          --panel: #2a1622;
+          --ink: #ffeef5;
+          --ink-soft: #d8a9bf;
+          --line: #553144;
+          --pink: #ff5c9c;
+          --pink-deep: #ff2e7e;
+          --yellow: #ffd23f;
+          --orange: #ffa04d;
+          --sky: #56ccf2;
+          --danger: #fb4d6d;
+          --stage-top: #3a1530;
+          --stage-mid: #2a1622;
+          --stage-bottom: #21101b;
+          --stage-line: rgba(255, 92, 156, .14);
+          --shadow: 0 10px 30px rgba(0, 0, 0, .45);
+        }
+      }
+
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--bg);
+        color: var(--ink);
+        font-family: "M PLUS Rounded 1c", "Hiragino Maru Gothic ProN", sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      .wrap {
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 14px 14px 28px;
+      }
+
+      /* ---------- HUD ---------- */
+      .hud {
+        display: grid;
+        grid-template-columns: 1fr 1.6fr auto;
+        gap: 10px;
+        align-items: stretch;
+        margin-bottom: 10px;
+      }
+      .hud-box {
+        background: var(--panel);
+        border: 2px solid var(--line);
+        border-radius: 14px;
+        padding: 8px 12px;
+        box-shadow: var(--shadow);
+      }
+      .hud-label {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: .08em;
+        color: var(--ink-soft);
+      }
+      .hud-value {
+        font-size: 26px;
+        font-weight: 800;
+        line-height: 1.15;
+        font-variant-numeric: tabular-nums;
+      }
+      .hud-value small { font-size: 13px; font-weight: 700; color: var(--ink-soft); }
+      .gal-bar-track {
+        margin-top: 5px;
+        height: 14px;
+        border-radius: 999px;
+        background: color-mix(in srgb, var(--line) 55%, transparent);
+        overflow: hidden;
+        border: 1px solid var(--line);
+      }
+      .gal-bar-fill {
+        height: 100%;
+        width: 100%;
+        border-radius: 999px;
+        background: linear-gradient(90deg, var(--pink) 0%, #ff7ab0 55%, var(--yellow) 100%);
+        transition: width .25s ease;
+      }
+      .gal-bar-fill.low {
+        background: linear-gradient(90deg, var(--danger), #ff8a5c);
+        animation: pulse-low .6s ease-in-out infinite alternate;
+      }
+      @keyframes pulse-low { from { filter: brightness(1); } to { filter: brightness(1.45); } }
+      .hud-side {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        justify-content: center;
+      }
+      .combo-badge {
+        text-align: center;
+        font-weight: 800;
+        font-size: 14px;
+        color: var(--pink-deep);
+        min-height: 20px;
+      }
+      .icon-btn {
+        appearance: none;
+        border: 2px solid var(--line);
+        background: var(--panel);
+        color: var(--ink);
+        border-radius: 12px;
+        font-family: inherit;
+        font-weight: 800;
+        font-size: 14px;
+        padding: 6px 14px;
+        cursor: pointer;
+        box-shadow: var(--shadow);
+      }
+      .icon-btn:active { transform: translateY(1px); }
+
+      /* ---------- Stage ---------- */
+      .stage {
+        position: relative;
+        height: min(66vh, 620px);
+        min-height: 430px;
+        border-radius: 20px;
+        border: 3px solid var(--pink);
+        overflow: hidden;
+        background:
+          repeating-linear-gradient(0deg, transparent 0 47px, var(--stage-line) 47px 48px),
+          repeating-linear-gradient(90deg, transparent 0 47px, var(--stage-line) 47px 48px),
+          linear-gradient(180deg, var(--stage-top) 0%, var(--stage-mid) 62%, var(--stage-bottom) 100%);
+        touch-action: none;
+        user-select: none;
+        -webkit-user-select: none;
+        cursor: ew-resize;
+      }
+      .stage.shake { animation: shake .32s linear; }
+      @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        20% { transform: translateX(-8px); }
+        40% { transform: translateX(7px); }
+        60% { transform: translateX(-5px); }
+        80% { transform: translateX(4px); }
+      }
+      .stage .flash {
+        position: absolute; inset: 0;
+        background: rgba(225, 29, 72, .28);
+        opacity: 0; pointer-events: none;
+        transition: opacity .35s ease;
+        z-index: 5;
+      }
+      .stage .flash.on { opacity: 1; transition: opacity .05s; }
+      .floor-line {
+        position: absolute; left: 0; right: 0; bottom: 86px;
+        border-top: 3px dashed color-mix(in srgb, var(--pink) 45%, transparent);
+        pointer-events: none;
+      }
+      .floor-label {
+        position: absolute; right: 10px; bottom: 92px;
+        font-size: 11px; font-weight: 800; letter-spacing: .06em;
+        color: var(--pink-deep); opacity: .75; pointer-events: none;
+      }
+
+      /* falling items */
+      .fall {
+        position: absolute;
+        top: 0; left: 0;
+        white-space: nowrap;
+        line-height: 1.1;
+        pointer-events: none;
+        will-change: transform;
+        z-index: 3;
+      }
+      .fall.gal-1 { font-family: "M PLUS Rounded 1c", sans-serif; font-weight: 800; font-size: 40px; color: var(--pink); text-shadow: 2px 2px 0 #fff, -1px -1px 0 #fff, 0 4px 10px rgba(255,46,126,.35); }
+      .fall.gal-2 { font-family: "DotGothic16", sans-serif; font-size: 40px; color: var(--orange); text-shadow: 2px 2px 0 #fff3, 2px 2px 0 rgba(255,255,255,.8), 0 4px 10px rgba(255,122,0,.3); }
+      .fall.gal-3 { font-family: "Kaisei Decol", serif; font-weight: 700; font-size: 38px; color: #b517c4; text-shadow: 2px 2px 0 rgba(255,255,255,.85), 0 4px 12px rgba(181,23,196,.3); }
+      .fall.gal-4 { font-family: "Yusei Magic", sans-serif; font-size: 40px; color: #00a884; text-shadow: 2px 2px 0 rgba(255,255,255,.85), 0 4px 10px rgba(0,168,132,.3); }
+      @media (prefers-color-scheme: dark) {
+        .fall.gal-1 { text-shadow: 2px 2px 0 #2b1220, -1px -1px 0 #2b1220, 0 4px 10px rgba(255,46,126,.5); }
+        .fall.gal-2 { text-shadow: 2px 2px 0 #2b1220, 0 4px 10px rgba(255,122,0,.5); }
+        .fall.gal-3 { color: #e879f9; text-shadow: 2px 2px 0 #2b1220, 0 4px 12px rgba(232,121,249,.45); }
+        .fall.gal-4 { color: #2ee6a8; text-shadow: 2px 2px 0 #2b1220, 0 4px 10px rgba(46,230,168,.4); }
+      }
+      .fall.bad-cancer {
+        font-family: "Zen Kaku Gothic New", sans-serif; font-weight: 900; font-size: 30px;
+        color: #e11d48;
+        text-shadow: 2px 2px 0 rgba(255,255,255,.85), 0 6px 14px rgba(225,29,72,.4);
+        letter-spacing: .02em;
+      }
+      @media (prefers-color-scheme: dark) {
+        .fall.bad-cancer { color: #fb4d6d; text-shadow: 2px 2px 0 #2b1220, 0 6px 14px rgba(251,77,109,.5); }
+      }
+      .fall.bad-shiki {
+        font-family: "Shippori Mincho", serif; font-weight: 800; font-size: 30px;
+        color: var(--sky);
+        text-shadow: 1px 1px 0 rgba(255,255,255,.9), 0 4px 12px rgba(56,189,248,.45);
+        letter-spacing: .06em;
+      }
+      @media (prefers-color-scheme: dark) {
+        .fall.bad-shiki { text-shadow: 1px 1px 0 #12303f, 0 4px 12px rgba(56,189,248,.55); }
+      }
+      .fall.oshisama {
+        text-align: center;
+        filter: drop-shadow(0 0 10px rgba(255, 196, 0, .75)) drop-shadow(0 6px 12px rgba(214, 0, 109, .28));
+      }
+      .fall.oshisama img {
+        display: block;
+        width: 78px; height: auto;
+        margin: 0 auto;
+      }
+      .fall.oshisama .oshisama-name {
+        display: inline-block;
+        margin-top: 1px;
+        background: linear-gradient(180deg, #ffe066 0%, var(--yellow) 55%, var(--orange) 100%);
+        color: #5c2d00;
+        font-family: "M PLUS Rounded 1c", sans-serif;
+        font-weight: 800; font-size: 15px; letter-spacing: .02em;
+        padding: 2px 10px;
+        border-radius: 999px;
+        border: 2px solid #e8930c;
+        box-shadow: 0 3px 8px rgba(255,150,0,.4);
+        white-space: nowrap;
+      }
+
+      /* player */
+      .player {
+        position: absolute;
+        bottom: 8px; left: 50%;
+        width: 96px;
+        transform: translateX(-50%);
+        z-index: 4;
+        pointer-events: none;
+        text-align: center;
+      }
+      .player .face {
+        width: 78px;
+        margin: 0 auto -8px;
+        position: relative; z-index: 2;
+        line-height: 0;
+      }
+      .player .face img {
+        width: 100%; height: auto; display: block;
+        filter: drop-shadow(0 3px 5px rgba(43, 18, 32, .28));
+      }
+      .player .basket {
+        position: relative; z-index: 1;
+        background: linear-gradient(180deg, var(--pink) 0%, var(--pink-deep) 100%);
+        color: #fff;
+        font-weight: 800; font-size: 13px; letter-spacing: .14em;
+        padding: 8px 4px 7px;
+        border-radius: 7px 7px 16px 16px;
+        border: 2px solid color-mix(in srgb, var(--pink-deep) 70%, #000 10%);
+        box-shadow: 0 8px 16px rgba(214,0,109,.3);
+      }
+      .player .basket::before {
+        content: ""; position: absolute; left: 6px; right: 6px; top: 4px;
+        border-top: 3px dotted rgba(255,255,255,.65);
+      }
+      .player.bump { animation: bump .22s ease; }
+      @keyframes bump { 0% { margin-bottom: 0; } 40% { margin-bottom: 7px; } 100% { margin-bottom: 0; } }
+      .player.hurt .face { animation: hurtshake .3s linear; }
+      .player.hurt .face img { filter: drop-shadow(0 3px 5px rgba(43, 18, 32, .28)) drop-shadow(0 0 7px rgba(225, 29, 72, .75)); }
+      @keyframes hurtshake { 0%,100% { transform: translateX(0);} 25% { transform: translateX(-4px);} 75% { transform: translateX(4px);} }
+
+      /* popups & particles */
+      .pop {
+        position: absolute; z-index: 6; pointer-events: none;
+        font-weight: 800; font-size: 19px;
+        animation: rise .8s ease-out forwards;
+        text-shadow: 1px 1px 0 rgba(255,255,255,.8);
+      }
+      .pop.plus { color: var(--pink-deep); }
+      .pop.bonus {
+        color: #b45309; font-size: 21px;
+        background: linear-gradient(180deg, #ffe066 0%, var(--yellow) 100%);
+        border: 2px solid #e8930c; border-radius: 999px;
+        padding: 3px 14px;
+        box-shadow: 0 6px 16px rgba(255,150,0,.4);
+        text-shadow: none;
+      }
+      @media (prefers-color-scheme: dark) { .pop.bonus { color: #5c2d00; } }
+      .pop.minus { color: var(--danger); font-size: 17px; }
+      .pop.avoid { color: var(--ink-soft); font-size: 14px; }
+      @keyframes rise { from { opacity: 1; transform: translateY(0) scale(1); } to { opacity: 0; transform: translateY(-52px) scale(1.12); } }
+      .spark {
+        position: absolute; z-index: 6; pointer-events: none;
+        width: 9px; height: 9px; border-radius: 2px;
+        animation: sparkfly .55s ease-out forwards;
+      }
+      @keyframes sparkfly { from { opacity: 1; transform: translate(0,0) rotate(0deg); } to { opacity: 0; transform: translate(var(--dx), var(--dy)) rotate(160deg); } }
+
+      /* overlays */
+      .overlay {
+        position: absolute; inset: 0; z-index: 10;
+        display: flex; align-items: center; justify-content: center;
+        background: color-mix(in srgb, var(--bg) 72%, transparent);
+        backdrop-filter: blur(3px);
+        padding: 16px;
+      }
+      .overlay[hidden] { display: none; }
+      .card {
+        background: var(--panel);
+        border: 3px solid var(--pink);
+        border-radius: 20px;
+        box-shadow: var(--shadow);
+        padding: 22px 22px 20px;
+        max-width: 480px; width: 100%;
+        text-align: center;
+        max-height: 100%; overflow-y: auto;
+      }
+      .card h1 {
+        margin: 0 0 4px;
+        font-size: 30px; font-weight: 800; color: var(--pink-deep);
+        letter-spacing: .02em;
+      }
+      .card h2 {
+        margin: 0 0 4px;
+        font-size: 27px; font-weight: 800; color: var(--pink-deep);
+      }
+      .card p { margin: 6px 0; color: var(--ink-soft); font-size: 14px; line-height: 1.65; font-weight: 500; }
+      .card .final-score { font-size: 44px; font-weight: 800; color: var(--ink); line-height: 1.1; }
+      .card .final-score small { font-size: 15px; color: var(--ink-soft); font-weight: 700; }
+      .result-title-label {
+        margin-top: 12px;
+        font-size: 11px; font-weight: 800; letter-spacing: .14em;
+        color: var(--ink-soft);
+      }
+      .result-title {
+        display: inline-block;
+        margin: 7px auto 12px;
+        padding: 9px 18px;
+        border-radius: 999px;
+        font-weight: 800;
+        line-height: 1.3;
+        max-width: 100%;
+      }
+      .result-title.rank-0 {
+        font-size: 19px;
+        color: var(--ink-soft);
+        background: color-mix(in srgb, var(--line) 32%, transparent);
+        border: 2px dashed var(--line);
+      }
+      .result-title.rank-1 {
+        font-size: 20px;
+        color: var(--pink-deep);
+        background: color-mix(in srgb, var(--pink) 12%, var(--panel));
+        border: 2px solid var(--line);
+      }
+      .result-title.rank-2 {
+        font-size: 22px;
+        color: #fff;
+        background: linear-gradient(180deg, var(--pink) 0%, var(--pink-deep) 100%);
+        border: 2px solid var(--pink-deep);
+        box-shadow: 0 6px 16px rgba(214,0,109,.28);
+      }
+      .result-title.rank-3 {
+        font-size: 24px;
+        color: #5c2d00;
+        background: linear-gradient(180deg, #ffe066 0%, var(--yellow) 55%, var(--orange) 100%);
+        border: 2px solid #e8930c;
+        box-shadow: 0 8px 20px rgba(255,150,0,.38);
+      }
+      .legend {
+        text-align: left;
+        margin: 14px auto 4px;
+        display: grid; gap: 8px;
+        max-width: 400px;
+      }
+      .legend-row {
+        display: flex; align-items: center; gap: 12px;
+        background: color-mix(in srgb, var(--line) 26%, transparent);
+        border-radius: 12px; padding: 7px 12px;
+      }
+      .legend-sample { min-width: 118px; text-align: center; line-height: 1.15; }
+      .legend-desc { font-size: 13px; font-weight: 700; color: var(--ink); }
+      .legend-desc span { display: block; font-size: 11.5px; font-weight: 500; color: var(--ink-soft); }
+      .s-gal-1 { font-family: "M PLUS Rounded 1c", sans-serif; font-weight: 800; font-size: 24px; color: var(--pink); }
+      .s-gal-2 { font-family: "DotGothic16", sans-serif; font-size: 24px; color: var(--orange); }
+      .s-gal-3 { font-family: "Kaisei Decol", serif; font-weight: 700; font-size: 23px; color: #b517c4; }
+      .s-gal-4 { font-family: "Yusei Magic", sans-serif; font-size: 24px; color: #00a884; }
+      .s-cancer { font-family: "Zen Kaku Gothic New", sans-serif; font-weight: 900; font-size: 19px; color: #e11d48; }
+      @media (prefers-color-scheme: dark) { .s-cancer { color: #fb4d6d; } .s-gal-3 { color: #e879f9; } .s-gal-4 { color: #2ee6a8; } }
+      .s-shiki { font-family: "Shippori Mincho", serif; font-weight: 800; font-size: 19px; color: var(--sky); letter-spacing: .05em; }
+      .s-oshisama { display: inline-block; text-align: center; line-height: 1.1; }
+      .s-oshisama img { display: block; width: 52px; height: auto; margin: 0 auto; filter: drop-shadow(0 0 6px rgba(255, 196, 0, .8)); }
+      .s-oshisama .oshisama-name {
+        display: inline-block; margin-top: 2px;
+        background: linear-gradient(180deg, #ffe066 0%, var(--yellow) 55%, var(--orange) 100%);
+        color: #5c2d00; font-weight: 800; font-size: 12.5px;
+        padding: 1px 9px; border-radius: 999px; border: 2px solid #e8930c;
+        white-space: nowrap;
+      }
+      .legend-row.rare {
+        background: linear-gradient(180deg, color-mix(in srgb, var(--yellow) 22%, transparent), color-mix(in srgb, var(--orange) 14%, transparent));
+        border: 2px solid #e8930c;
+      }
+      .start-btn {
+        margin-top: 16px;
+        appearance: none; border: none; cursor: pointer;
+        background: linear-gradient(180deg, var(--pink) 0%, var(--pink-deep) 100%);
+        color: #fff; font-family: inherit; font-weight: 800; font-size: 19px;
+        letter-spacing: .1em;
+        padding: 12px 42px; border-radius: 999px;
+        box-shadow: 0 8px 20px rgba(214,0,109,.35);
+      }
+      .start-btn:active { transform: translateY(2px); }
+      .howto { margin-top: 12px; font-size: 12.5px; color: var(--ink-soft); font-weight: 500; line-height: 1.7; }
+
+      /* player name fields */
+      .name-box {
+        margin: 14px auto 0;
+        max-width: 400px;
+        text-align: left;
+        background: color-mix(in srgb, var(--line) 26%, transparent);
+        border-radius: 12px;
+        padding: 10px 12px;
+      }
+      .name-box label, .board-name label {
+        display: block;
+        font-size: 12px; font-weight: 800; letter-spacing: .06em;
+        color: var(--ink-soft);
+        margin-bottom: 5px;
+      }
+      .name-input {
+        width: 100%;
+        font-family: inherit; font-size: 16px; font-weight: 700;
+        color: var(--ink);
+        background: var(--panel);
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        padding: 8px 12px;
+        min-height: 2.75rem;
+      }
+      .name-input:focus { outline: 3px solid color-mix(in srgb, var(--pink) 45%, transparent); border-color: var(--pink); }
+      .name-hint { font-size: 11.5px !important; margin: 5px 0 0 !important; }
+
+      /* ---------- Scoreboard ---------- */
+      .board {
+        margin-top: 14px;
+        background: var(--panel);
+        border: 2px solid var(--line);
+        border-radius: 16px;
+        box-shadow: var(--shadow);
+        padding: 14px 16px 12px;
+      }
+      .board-head {
+        display: flex; align-items: baseline; justify-content: space-between; gap: 10px;
+        border-bottom: 2px dashed var(--line);
+        padding-bottom: 8px;
+      }
+      .board-title { margin: 0; font-size: 20px; font-weight: 800; color: var(--pink-deep); }
+      .board-count { font-size: 12.5px; font-weight: 800; color: var(--ink-soft); white-space: nowrap; }
+      .board-settings {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px 18px;
+        margin-top: 12px;
+        align-items: start;
+      }
+      .board-toggles-label {
+        display: block;
+        font-size: 12px; font-weight: 800; letter-spacing: .06em;
+        color: var(--ink-soft);
+        margin-bottom: 5px;
+      }
+      .board-toggles-btns { display: flex; flex-wrap: wrap; gap: 8px; }
+      .toggle-btn {
+        appearance: none; cursor: pointer;
+        font-family: inherit; font-weight: 800; font-size: 13px;
+        padding: 7px 13px; border-radius: 999px;
+        border: 2px solid var(--line);
+        background: var(--panel); color: var(--ink-soft);
+        min-height: 2.75rem;
+      }
+      .toggle-btn.is-on {
+        background: linear-gradient(180deg, var(--pink) 0%, var(--pink-deep) 100%);
+        border-color: var(--pink-deep);
+        color: #fff;
+      }
+      .toggle-btn:active { transform: translateY(1px); }
+      .board-empty {
+        margin-top: 12px;
+        text-align: center;
+        font-size: 13.5px; font-weight: 700; color: var(--ink-soft);
+        background: color-mix(in srgb, var(--line) 24%, transparent);
+        border-radius: 12px;
+        padding: 14px 10px;
+      }
+      .board-list { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 7px; }
+      .board-row {
+        display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+        background: color-mix(in srgb, var(--line) 22%, transparent);
+        border-radius: 12px;
+        padding: 8px 12px;
+      }
+      .board-row.top {
+        background: linear-gradient(180deg, color-mix(in srgb, var(--yellow) 26%, transparent), color-mix(in srgb, var(--orange) 14%, transparent));
+        border: 2px solid #e8930c;
+      }
+      .board-rank { font-weight: 800; font-size: 15px; color: var(--pink-deep); min-width: 2.6em; }
+      .board-row.top .board-rank { color: #b45309; }
+      @media (prefers-color-scheme: dark) { .board-row.top .board-rank { color: var(--yellow); } }
+      .board-player { font-weight: 800; font-size: 15px; color: var(--ink); overflow-wrap: anywhere; }
+      .board-score { font-weight: 800; font-size: 16px; color: var(--ink); font-variant-numeric: tabular-nums; margin-left: auto; }
+      .board-meta { font-size: 11.5px; font-weight: 700; color: var(--ink-soft); width: 100%; }
+      .board-foot { margin: 10px 0 2px; font-size: 11.5px; font-weight: 500; color: var(--ink-soft); }
+      .mini-board { margin: 12px auto 0; max-width: 400px; text-align: left; }
+      .mini-board-title { font-size: 12px; font-weight: 800; letter-spacing: .1em; color: var(--ink-soft); text-align: center; margin-bottom: 6px; }
+      .mini-board .board-list { margin-top: 0; }
+      .mini-board .board-row { padding: 6px 10px; }
+      .final-player { font-weight: 800 !important; color: var(--ink) !important; }
+
+      /* under-stage notes */
+      .notes {
+        display: flex; flex-wrap: wrap; gap: 8px;
+        margin-top: 12px;
+      }
+      .note-chip {
+        background: var(--panel); border: 2px solid var(--line);
+        border-radius: 999px; padding: 6px 13px;
+        font-size: 12.5px; font-weight: 700; color: var(--ink-soft);
+      }
+      .note-chip b { color: var(--pink-deep); }
+      .level-toast {
+        position: absolute; top: 14px; left: 50%; transform: translateX(-50%);
+        z-index: 7; pointer-events: none;
+        background: var(--ink); color: var(--bg);
+        font-weight: 800; font-size: 14px; letter-spacing: .08em;
+        padding: 6px 16px; border-radius: 999px;
+        opacity: 0; transition: opacity .25s ease;
+      }
+      .level-toast.on { opacity: .92; }
+
+      @media (max-width: 560px) {
+        .hud { grid-template-columns: 1fr 1.35fr auto; gap: 7px; }
+        .hud-value { font-size: 21px; }
+        .hud-box { padding: 6px 9px; }
+        .stage { min-height: 640px; height: 82vh; }
+        .overlay { padding: 10px; align-items: flex-start; overflow-y: auto; }
+        .card { padding: 14px 14px 12px; border-width: 2px; }
+        .card h1 { font-size: 23px; }
+        .card h2 { font-size: 22px; }
+        .card p { font-size: 12.5px; line-height: 1.55; margin: 4px 0; }
+        .legend { gap: 5px; margin-top: 9px; }
+        .legend-row { padding: 4px 10px; gap: 8px; border-radius: 9px; }
+        .legend-sample { min-width: 92px; }
+        .legend-desc { font-size: 12px; }
+        .legend-desc span { font-size: 11px; }
+        .s-gal-1, .s-gal-2, .s-gal-4 { font-size: 19px; }
+        .s-gal-3 { font-size: 18px; }
+        .s-cancer, .s-shiki { font-size: 15.5px; }
+        .result-title.rank-0 { font-size: 17px; }
+        .result-title.rank-1 { font-size: 18px; }
+        .result-title.rank-2 { font-size: 19px; }
+        .result-title.rank-3 { font-size: 20px; }
+        .start-btn { margin-top: 10px; padding: 10px 34px; font-size: 17px; }
+        .howto { margin-top: 8px; font-size: 11.5px; line-height: 1.55; }
+        .fall.gal-1, .fall.gal-2, .fall.gal-4 { font-size: 33px; }
+        .fall.gal-3 { font-size: 31px; }
+        .fall.bad-cancer, .fall.bad-shiki { font-size: 25px; }
+        .fall.oshisama img { width: 64px; }
+        .fall.oshisama .oshisama-name { font-size: 13px; padding: 1px 8px; }
+        .s-oshisama img { width: 42px; }
+        .s-oshisama .oshisama-name { font-size: 11px; }
+        .board { padding: 12px 12px 10px; }
+        .board-title { font-size: 18px; }
+        .board-settings { grid-template-columns: 1fr; gap: 10px; }
+        .board-rank { min-width: 2.3em; font-size: 14px; }
+        .board-player { font-size: 14px; }
+        .board-score { font-size: 15px; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .stage.shake, .player.bump, .player.hurt .face { animation: none; }
+        .gal-bar-fill.low { animation: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <!-- HUD -->
+      <div class="hud" aria-label="ゲーム状況">
+        <div class="hud-box">
+          <div class="hud-label">スコア</div>
+          <div class="hud-value"><span id="score">0</span><small> pt</small></div>
+        </div>
+        <div class="hud-box">
+          <div class="hud-label">ギャル度（ライフ）</div>
+          <div class="hud-value"><span id="galVal">100</span><small> %</small></div>
+          <div class="gal-bar-track"><div class="gal-bar-fill" id="galBar"></div></div>
+        </div>
+        <div class="hud-side">
+          <div class="combo-badge" id="combo"></div>
+          <button class="icon-btn" id="pauseBtn" type="button">⏸ 一時停止</button>
+        </div>
+      </div>
+
+      <!-- Stage -->
+      <div class="stage" id="stage">
+        <div class="flash" id="flash"></div>
+        <div class="level-toast" id="levelToast">SPEED UP!</div>
+        <div class="floor-line"></div>
+        <div class="floor-label">キャッチライン</div>
+
+        <div class="player" id="player">
+          <div class="face"><img src="catcher.png" alt="キャッチするキャラクター" /></div>
+          <div class="basket">CATCH</div>
+        </div>
+
+        <!-- Start overlay -->
+        <div class="overlay" id="startOverlay">
+          <div class="card">
+            <h1>いのりんをギャルにしよう！！</h1>
+            <p>上から落ちてくる「ギャル」をキャッチして回収しよう。<br />ダメージテキストに当たるとギャル度が下がっちゃうよ。<br />たまに落ちてくるレアな「お師さま！」は超ボーナス！</p>
+            <div class="legend">
+              <div class="legend-row">
+                <div class="legend-sample"><span class="s-gal-1">ギャル</span></div>
+                <div class="legend-desc">ポップ体で回収！<span>キャッチで +100pt</span></div>
+              </div>
+              <div class="legend-row">
+                <div class="legend-sample"><span class="s-gal-2">ギャル</span></div>
+                <div class="legend-desc">ドット体で回収！<span>キャッチで +100pt</span></div>
+              </div>
+              <div class="legend-row">
+                <div class="legend-sample"><span class="s-gal-3">ギャル</span></div>
+                <div class="legend-desc">デコ体で回収！<span>キャッチで +100pt</span></div>
+              </div>
+              <div class="legend-row">
+                <div class="legend-sample"><span class="s-gal-4">ギャル</span></div>
+                <div class="legend-desc">手書き体で回収！<span>キャッチで +100pt</span></div>
+              </div>
+              <div class="legend-row rare">
+                <div class="legend-sample"><span class="s-oshisama"><img src="oshisama.png" alt="お師さま！" /><span class="oshisama-name">お師さま！</span></span></div>
+                <div class="legend-desc">お師さまがお助けしましょう！<span>キャッチで +500pt ＆ ギャル度 +20 回復</span></div>
+              </div>
+              <div class="legend-row">
+                <div class="legend-sample"><span class="s-cancer">キャンサー</span></div>
+                <div class="legend-desc">赤いダメージテキスト<span>当たると ギャル度 −20〜−35（ペースで増加）</span></div>
+              </div>
+              <div class="legend-row">
+                <div class="legend-sample"><span class="s-shiki">華村詩紀</span></div>
+                <div class="legend-desc">水色のダメージテキスト<span>当たると ギャル度 −20〜−35（ペースで増加）</span></div>
+              </div>
+            </div>
+            <div class="name-box">
+              <label for="playerNameInput">プレイヤー名</label>
+              <input class="name-input" id="playerNameInput" type="text" maxlength="12" value="プレイヤー" autocomplete="off" />
+              <p class="name-hint">この名前でスコアボードに載るよ。あとからでも変えられるよ。</p>
+            </div>
+            <button class="start-btn" id="startBtn" type="button">▶ スタート</button>
+            <div class="howto">操作方法： マウス移動 ／ 指でドラッグ ／ ←→キー・A・Dキー<br />「ギャル」を取り逃がすと ギャル度 −8。ダメージテキストは避ければOK！<br />「お師さま！」を取り逃がしてもペナルティはないよ。<br />ペースが上がるとダメージも増えて最大 −35 になるよ。</div>
+          </div>
+        </div>
+
+        <!-- Game over overlay -->
+        <div class="overlay" id="overOverlay" hidden>
+          <div class="card">
+            <h2>ギャル度が尽きた…！</h2>
+            <div class="result-title-label">結果称号</div>
+            <div><span class="result-title rank-0" id="finalTitle">いつも通りのいのりん</span></div>
+            <p>今回のスコア</p>
+            <div class="final-score"><span id="finalScore">0</span><small> pt</small></div>
+            <p class="final-player" id="finalPlayer"></p>
+            <p id="finalDetail"></p>
+            <div class="mini-board" id="miniBoard" hidden>
+              <div class="mini-board-title">スコアボード（上位5件）</div>
+              <ol class="board-list" id="miniBoardList"></ol>
+            </div>
+            <button class="start-btn" id="retryBtn" type="button">↻ もう一度あそぶ</button>
+          </div>
+        </div>
+
+        <!-- Pause overlay -->
+        <div class="overlay" id="pauseOverlay" hidden>
+          <div class="card">
+            <h2>一時停止中</h2>
+            <p>ひとやすみ中。準備ができたら再開してね。</p>
+            <button class="start-btn" id="resumeBtn" type="button">▶ 再開する</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scoreboard -->
+      <section class="board" aria-label="スコアボード">
+        <div class="board-head">
+          <h2 class="board-title">スコアボード</h2>
+          <span class="board-count" id="boardCount">まだ記録なし</span>
+        </div>
+        <div class="board-settings">
+          <div class="board-name">
+            <label for="boardNameInput">プレイヤー名（変更できるよ）</label>
+            <input class="name-input" id="boardNameInput" type="text" maxlength="12" value="プレイヤー" autocomplete="off" />
+          </div>
+          <div>
+            <span class="board-toggles-label" id="boardTogglesLabel">スコアボードに表示する項目</span>
+            <div class="board-toggles-btns" role="group" aria-labelledby="boardTogglesLabel">
+              <button class="toggle-btn is-on" id="toggleNameBtn" type="button" aria-pressed="true">プレイヤー名：表示</button>
+              <button class="toggle-btn is-on" id="toggleScoreBtn" type="button" aria-pressed="true">スコア：表示</button>
+            </div>
+          </div>
+        </div>
+        <div class="board-empty" id="boardEmpty">まだ記録がないよ。ゲームをプレイすると、結果がここに表示されるよ。</div>
+        <ol class="board-list" id="boardList"></ol>
+        <p class="board-foot">名前を変えると、次にプレイした記録から新しい名前で載るよ。</p>
+      </section>
+
+      <div class="notes">
+        <div class="note-chip">連続キャッチで <b>コンボボーナス</b>（5連続ごとに +50pt）</div>
+        <div class="note-chip">時間がたつほど <b>落下スピードアップ＆ダメージ増加</b>（最大 −35）</div>
+        <div class="note-chip">ギャル回収で <b>ギャル度 +2</b> 回復（最大100）</div>
+        <div class="note-chip">レアな <b>お師さま！</b> 回収で <b>+500pt＆ギャル度 +20</b> 回復</div>
+      </div>
+    </main>
+
+    <script>
+      (function () {
+        var stage = document.getElementById('stage');
+        var player = document.getElementById('player');
+        var scoreEl = document.getElementById('score');
+        var galValEl = document.getElementById('galVal');
+        var galBarEl = document.getElementById('galBar');
+        var comboEl = document.getElementById('combo');
+        var flashEl = document.getElementById('flash');
+        var toastEl = document.getElementById('levelToast');
+        var startOverlay = document.getElementById('startOverlay');
+        var overOverlay = document.getElementById('overOverlay');
+        var pauseOverlay = document.getElementById('pauseOverlay');
+        var finalScoreEl = document.getElementById('finalScore');
+        var finalDetailEl = document.getElementById('finalDetail');
+        var finalTitleEl = document.getElementById('finalTitle');
+        var finalPlayerEl = document.getElementById('finalPlayer');
+        var pauseBtn = document.getElementById('pauseBtn');
+        var nameInputs = [
+          document.getElementById('playerNameInput'),
+          document.getElementById('boardNameInput')
+        ];
+        var boardListEl = document.getElementById('boardList');
+        var boardEmptyEl = document.getElementById('boardEmpty');
+        var boardCountEl = document.getElementById('boardCount');
+        var miniBoardEl = document.getElementById('miniBoard');
+        var miniBoardListEl = document.getElementById('miniBoardList');
+        var toggleNameBtn = document.getElementById('toggleNameBtn');
+        var toggleScoreBtn = document.getElementById('toggleScoreBtn');
+
+        var PLAYER_W = 96;
+        var CATCH_LINE_FROM_BOTTOM = 86; // matches .floor-line bottom
+
+        var state = 'ready'; // ready | playing | paused | over
+        var score = 0;
+        var gal = 100;
+        var combo = 0;
+        var caughtCount = 0;
+        var oshisamaCount = 0;
+        var playerX = 0;      // center x of player within stage
+        var targetX = 0;
+        var keys = {};
+        var items = [];       // {el, x, y, vy, type, w}
+        var lastTime = 0;
+        var spawnTimer = 0;
+        var elapsed = 0;
+        var level = 1;
+        var rafId = null;
+
+        /* ---------- scoreboard ---------- */
+        /* Supabase 設定（外部公開版）: デプロイ時に実際の値へ置き換える。
+           未設定（プレースホルダ）のままや通信失敗時は、従来のメモリ内ボードにフォールバックする。 */
+        const SUPABASE_URL = "__SUPABASE_URL__";
+        const SUPABASE_ANON_KEY = "__SUPABASE_ANON_KEY__";
+        function supabaseConfigured() {
+          return SUPABASE_URL.indexOf('__') !== 0 && SUPABASE_ANON_KEY.indexOf('__') !== 0 &&
+            SUPABASE_URL.indexOf('http') === 0;
+        }
+        function supabaseHeaders(extra) {
+          var h = {
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': 'Bearer ' + SUPABASE_ANON_KEY
+          };
+          if (extra) { for (var k in extra) h[k] = extra[k]; }
+          return h;
+        }
+        function formatBoardTime(iso) {
+          var d = iso ? new Date(iso) : new Date();
+          if (isNaN(d.getTime())) d = new Date();
+          return d.toLocaleDateString('ja-JP', { month: 'numeric', day: 'numeric' }) +
+            ' ' + d.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' });
+        }
+        // サーバーの scores 行 → 既存のボード項目形式に変換
+        // scores: {name, score, title, gal_catches, oshisama_catches, created_at}
+        // board : {name, score, title, caught,       oshisama,         time}
+        function rowToEntry(row) {
+          return {
+            name: row.name,
+            score: row.score,
+            title: row.title,
+            caught: row.gal_catches,
+            oshisama: row.oshisama_catches,
+            time: formatBoardTime(row.created_at)
+          };
+        }
+        function loadBoardFromSupabase() {
+          if (!supabaseConfigured() || typeof fetch !== 'function') return;
+          fetch(SUPABASE_URL + '/rest/v1/scores?select=*&order=score.desc&limit=100', {
+            headers: supabaseHeaders()
+          }).then(function (res) {
+            if (!res.ok) throw new Error('load failed: ' + res.status);
+            return res.json();
+          }).then(function (rows) {
+            if (Array.isArray(rows)) {
+              boardEntries = rows.map(rowToEntry);
+              renderBoard();
+            }
+          }).catch(function () { /* フォールバック: メモリ内ボードのまま */ });
+        }
+        function postScoreToSupabase(entry) {
+          if (!supabaseConfigured() || typeof fetch !== 'function') return;
+          fetch(SUPABASE_URL + '/rest/v1/scores', {
+            method: 'POST',
+            headers: supabaseHeaders({ 'Content-Type': 'application/json', 'Prefer': 'return=minimal' }),
+            body: JSON.stringify({
+              name: entry.name,
+              score: entry.score,
+              title: entry.title,
+              gal_catches: entry.caught,
+              oshisama_catches: entry.oshisama
+            })
+          }).then(function (res) {
+            if (!res.ok) throw new Error('post failed: ' + res.status);
+            loadBoardFromSupabase(); // サーバー側の最新ボードで表示を更新
+          }).catch(function () { /* フォールバック: ローカルに追加済みの記録がそのまま残る */ });
+        }
+
+        var playerName = 'プレイヤー';
+        var showName = true;
+        var showScore = true;
+        var boardEntries = []; // {name, score, title, caught, oshisama, time}
+
+        function currentName() {
+          var n = (playerName || '').trim();
+          return n ? n : '名無しプレイヤー';
+        }
+        function setPlayerName(value, source) {
+          playerName = value;
+          for (var i = 0; i < nameInputs.length; i++) {
+            if (nameInputs[i] && nameInputs[i] !== source) nameInputs[i].value = value;
+          }
+        }
+        function makeBoardRow(entry, idx) {
+          var li = document.createElement('li');
+          li.className = 'board-row' + (idx === 0 ? ' top' : '');
+          var rank = document.createElement('span');
+          rank.className = 'board-rank';
+          rank.textContent = (idx + 1) + '位';
+          li.appendChild(rank);
+          if (showName) {
+            var nm = document.createElement('span');
+            nm.className = 'board-player';
+            nm.textContent = entry.name;
+            li.appendChild(nm);
+          }
+          if (showScore) {
+            var sc = document.createElement('span');
+            sc.className = 'board-score';
+            sc.textContent = entry.score + ' pt';
+            li.appendChild(sc);
+          }
+          var meta = document.createElement('span');
+          meta.className = 'board-meta';
+          var metaText = '称号「' + entry.title + '」 ・ ギャル ' + entry.caught + ' 個';
+          if (entry.oshisama > 0) metaText += ' ・ お師さま！ ' + entry.oshisama + ' 回';
+          metaText += ' ・ ' + entry.time;
+          meta.textContent = metaText;
+          li.appendChild(meta);
+          return li;
+        }
+        function sortedEntries() {
+          return boardEntries.slice().sort(function (a, b) { return b.score - a.score; });
+        }
+        function renderBoard() {
+          var sorted = sortedEntries();
+          boardListEl.innerHTML = '';
+          miniBoardListEl.innerHTML = '';
+          boardEmptyEl.style.display = sorted.length ? 'none' : '';
+          boardCountEl.textContent = sorted.length ? sorted.length + ' 件の記録' : 'まだ記録なし';
+          for (var i = 0; i < sorted.length; i++) {
+            boardListEl.appendChild(makeBoardRow(sorted[i], i));
+          }
+          var top = sorted.slice(0, 5);
+          for (var j = 0; j < top.length; j++) {
+            miniBoardListEl.appendChild(makeBoardRow(top[j], j));
+          }
+          miniBoardEl.hidden = top.length === 0;
+        }
+        function addBoardEntry(titleText) {
+          var now = new Date();
+          var timeText = now.toLocaleDateString('ja-JP', { month: 'numeric', day: 'numeric' }) +
+            ' ' + now.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' });
+          var entry = {
+            name: currentName(),
+            score: score,
+            title: titleText,
+            caught: caughtCount,
+            oshisama: oshisamaCount,
+            time: timeText
+          };
+          boardEntries.push(entry);
+          renderBoard();
+          postScoreToSupabase(entry); // 未設定・失敗時はローカル記録がフォールバックとして残る
+        }
+        function syncToggleButtons() {
+          toggleNameBtn.classList.toggle('is-on', showName);
+          toggleNameBtn.setAttribute('aria-pressed', showName ? 'true' : 'false');
+          toggleNameBtn.textContent = 'プレイヤー名：' + (showName ? '表示' : '非表示');
+          toggleScoreBtn.classList.toggle('is-on', showScore);
+          toggleScoreBtn.setAttribute('aria-pressed', showScore ? 'true' : 'false');
+          toggleScoreBtn.textContent = 'スコア：' + (showScore ? '表示' : '非表示');
+        }
+
+        /* ---------- audio (tiny synth) ---------- */
+        var audioCtx = null;
+        function beep(freq, dur, type, vol, when) {
+          try {
+            if (!audioCtx) {
+              var AC = window.AudioContext || window.webkitAudioContext;
+              if (!AC) return;
+              audioCtx = new AC();
+            }
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            var t = audioCtx.currentTime + (when || 0);
+            var osc = audioCtx.createOscillator();
+            var gain = audioCtx.createGain();
+            osc.type = type || 'sine';
+            osc.frequency.setValueAtTime(freq, t);
+            gain.gain.setValueAtTime(vol || 0.08, t);
+            gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(t); osc.stop(t + dur);
+          } catch (e) { /* sound is optional */ }
+        }
+        function soundCatch() { beep(880, 0.1, 'sine', 0.07, 0); beep(1318, 0.14, 'sine', 0.06, 0.07); }
+        function soundCombo() { beep(1046, 0.09, 'triangle', 0.07, 0); beep(1568, 0.16, 'triangle', 0.06, 0.08); }
+        function soundHurt() { beep(160, 0.25, 'sawtooth', 0.09, 0); beep(110, 0.3, 'sawtooth', 0.07, 0.05); }
+        function soundMiss() { beep(330, 0.12, 'sine', 0.05, 0); beep(220, 0.16, 'sine', 0.05, 0.08); }
+        function soundBonus() { beep(784, 0.1, 'triangle', 0.08, 0); beep(988, 0.1, 'triangle', 0.08, 0.08); beep(1175, 0.1, 'triangle', 0.08, 0.16); beep(1568, 0.22, 'triangle', 0.09, 0.24); }
+
+        /* ---------- helpers ---------- */
+        function stageW() { return stage.clientWidth; }
+        function stageH() { return stage.clientHeight; }
+        function clampPlayer() {
+          var half = PLAYER_W / 2;
+          if (playerX < half) playerX = half;
+          if (playerX > stageW() - half) playerX = stageW() - half;
+        }
+        function renderPlayer() {
+          player.style.left = playerX + 'px';
+        }
+        function updateHUD() {
+          scoreEl.textContent = score;
+          var g = Math.max(0, Math.round(gal));
+          galValEl.textContent = g;
+          galBarEl.style.width = g + '%';
+          if (g <= 30) galBarEl.classList.add('low'); else galBarEl.classList.remove('low');
+          comboEl.textContent = combo >= 2 ? combo + ' コンボ！' : '';
+        }
+        function popText(x, y, text, cls) {
+          var el = document.createElement('div');
+          el.className = 'pop ' + cls;
+          el.textContent = text;
+          el.style.left = x + 'px';
+          el.style.top = y + 'px';
+          stage.appendChild(el);
+          setTimeout(function () { el.remove(); }, 850);
+        }
+        function sparks(x, y) {
+          var colors = ['#ff2e7e', '#ffc400', '#ff7a00', '#38bdf8', '#b517c4'];
+          for (var i = 0; i < 8; i++) {
+            var s = document.createElement('div');
+            s.className = 'spark';
+            var ang = (Math.PI * 2 * i) / 8 + Math.random() * 0.5;
+            var dist = 34 + Math.random() * 30;
+            s.style.setProperty('--dx', Math.cos(ang) * dist + 'px');
+            s.style.setProperty('--dy', Math.sin(ang) * dist - 14 + 'px');
+            s.style.background = colors[i % colors.length];
+            s.style.left = x + 'px';
+            s.style.top = y + 'px';
+            stage.appendChild(s);
+            (function (node) { setTimeout(function () { node.remove(); }, 600); })(s);
+          }
+        }
+        function bumpPlayer() {
+          player.classList.remove('bump'); void player.offsetWidth; player.classList.add('bump');
+        }
+        function hurtPlayer() {
+          player.classList.remove('hurt'); void player.offsetWidth; player.classList.add('hurt');
+          stage.classList.remove('shake'); void stage.offsetWidth; stage.classList.add('shake');
+          flashEl.classList.add('on');
+          setTimeout(function () { flashEl.classList.remove('on'); }, 90);
+          setTimeout(function () { player.classList.remove('hurt'); }, 350);
+        }
+
+        /* ---------- spawning ---------- */
+        var GAL_CLASSES = ['gal-1', 'gal-2', 'gal-3', 'gal-4'];
+        function spawnInterval() {
+          return Math.max(430, 950 - elapsed * 9);
+        }
+        function fallSpeed() {
+          return 150 + elapsed * 4.2 + Math.random() * 70;
+        }
+        function damageBonus() {
+          // ペース（レベル）が上がるほどダメージが増え、最大で +15
+          return Math.min(15, (level - 1) * 3);
+        }
+        function currentDamage() {
+          return 20 + damageBonus();
+        }
+        function spawn() {
+          var roll = Math.random();
+          var el = document.createElement('div');
+          var type;
+          var startY = -48;
+          if (roll < 0.03) {
+            // レア出現（約3%）：お師さま！
+            type = 'oshisama';
+            el.className = 'fall oshisama';
+            var img = document.createElement('img');
+            img.src = 'oshisama.png';
+            img.alt = 'お師さま！';
+            el.appendChild(img);
+            var nameEl = document.createElement('span');
+            nameEl.className = 'oshisama-name';
+            nameEl.textContent = 'お師さま！';
+            el.appendChild(nameEl);
+            startY = -120;
+          } else if (roll < 0.68) {
+            type = 'gal';
+            var cls = GAL_CLASSES[Math.floor(Math.random() * 4)];
+            el.className = 'fall ' + cls;
+            el.textContent = 'ギャル';
+            el.style.transform = 'rotate(' + (Math.random() * 10 - 5) + 'deg)';
+          } else if (roll < 0.84) {
+            type = 'cancer';
+            el.className = 'fall bad-cancer';
+            el.textContent = 'キャンサー';
+          } else {
+            type = 'shiki';
+            el.className = 'fall bad-shiki';
+            el.textContent = '華村詩紀';
+          }
+          stage.appendChild(el);
+          var w = el.offsetWidth || 110;
+          var h = el.offsetHeight || 44;
+          var x = 6 + Math.random() * Math.max(10, stageW() - w - 12);
+          var rot = type === 'oshisama' ? 0 : Math.random() * 10 - 5;
+          var item = { el: el, x: x, y: startY, vy: fallSpeed(), type: type, w: w, h: h, rot: rot };
+          el.style.transform = 'translate(' + x + 'px,' + startY + 'px) rotate(' + item.rot + 'deg)';
+          items.push(item);
+        }
+
+        /* ---------- game flow ---------- */
+        function resetGame() {
+          for (var i = 0; i < items.length; i++) items[i].el.remove();
+          items = [];
+          score = 0; gal = 100; combo = 0; caughtCount = 0; oshisamaCount = 0;
+          elapsed = 0; level = 1; spawnTimer = 0;
+          playerX = stageW() / 2; targetX = playerX;
+          clampPlayer(); renderPlayer(); updateHUD();
+        }
+        function startGame() {
+          resetGame();
+          state = 'playing';
+          startOverlay.hidden = true;
+          overOverlay.hidden = true;
+          pauseOverlay.hidden = true;
+          pauseBtn.textContent = '⏸ 一時停止';
+          lastTime = performance.now();
+          if (rafId) cancelAnimationFrame(rafId);
+          rafId = requestAnimationFrame(loop);
+        }
+        var RESULT_TITLES = [
+          { min: 0,     text: 'いつも通りのいのりん' },
+          { min: 6001,  text: 'ギャルっぽいいのりん' },
+          { min: 10001, text: 'そこそこギャルないのりん' },
+          { min: 23000, text: 'ギャルしか勝たんいのりん' }
+        ];
+        function resultTitleForScore(s) {
+          var idx = 0;
+          for (var i = 0; i < RESULT_TITLES.length; i++) {
+            if (s >= RESULT_TITLES[i].min) idx = i;
+          }
+          return { index: idx, text: RESULT_TITLES[idx].text, next: RESULT_TITLES[idx + 1] || null };
+        }
+        function gameOver() {
+          state = 'over';
+          gal = 0; updateHUD();
+          var result = resultTitleForScore(score);
+          finalTitleEl.textContent = result.text;
+          finalTitleEl.className = 'result-title rank-' + result.index;
+          finalScoreEl.textContent = score;
+          var detail = 'ギャルを ' + caughtCount + ' 個回収したよ。';
+          if (oshisamaCount > 0) {
+            detail += ' お師さま！を ' + oshisamaCount + ' 回回収したよ。';
+          }
+          if (result.next) {
+            detail += ' あと ' + (result.next.min - score) + 'pt で「' + result.next.text + '」だよ。';
+          } else {
+            detail += ' 最高の称号ゲット！';
+          }
+          finalDetailEl.textContent = detail;
+          finalPlayerEl.textContent = 'プレイヤー：' + currentName();
+          addBoardEntry(result.text);
+          overOverlay.hidden = false;
+          if (rafId) cancelAnimationFrame(rafId);
+        }
+        function togglePause() {
+          if (state === 'playing') {
+            state = 'paused';
+            pauseOverlay.hidden = false;
+            pauseBtn.textContent = '▶ 再開';
+            if (rafId) cancelAnimationFrame(rafId);
+          } else if (state === 'paused') {
+            state = 'playing';
+            pauseOverlay.hidden = true;
+            pauseBtn.textContent = '⏸ 一時停止';
+            lastTime = performance.now();
+            rafId = requestAnimationFrame(loop);
+          }
+        }
+
+        function damage(amount, x, y, label) {
+          gal -= amount;
+          combo = 0;
+          hurtPlayer();
+          soundHurt();
+          popText(x, y, label || ('ギャル度 −' + amount), 'minus');
+          updateHUD();
+          if (gal <= 0) gameOver();
+        }
+
+        function loop(now) {
+          if (state !== 'playing') return;
+          var dt = Math.min(0.05, (now - lastTime) / 1000);
+          lastTime = now;
+          elapsed += dt;
+
+          // level / speed up toast
+          var newLevel = 1 + Math.floor(elapsed / 25);
+          if (newLevel > level) {
+            level = newLevel;
+            toastEl.textContent = damageBonus() > 0 ? 'SPEED UP! ダメージ −' + currentDamage() : 'SPEED UP!';
+            toastEl.classList.add('on');
+            setTimeout(function () { toastEl.classList.remove('on'); }, 1300);
+          }
+
+          // keyboard movement
+          var kSpeed = 560;
+          if (keys['arrowleft'] || keys['a']) targetX -= kSpeed * dt;
+          if (keys['arrowright'] || keys['d']) targetX += kSpeed * dt;
+          // smooth follow
+          playerX += (targetX - playerX) * Math.min(1, dt * 18);
+          var half = PLAYER_W / 2;
+          if (playerX < half) playerX = half;
+          if (playerX > stageW() - half) playerX = stageW() - half;
+          if (targetX < half) targetX = half;
+          if (targetX > stageW() - half) targetX = stageW() - half;
+          renderPlayer();
+
+          // spawn
+          spawnTimer -= dt * 1000;
+          if (spawnTimer <= 0) { spawn(); spawnTimer = spawnInterval(); }
+
+          // catch geometry: catch zone is the basket near the bottom
+          var catchTop = stageH() - CATCH_LINE_FROM_BOTTOM - 26;
+          var catchBottom = stageH() - 6;
+          var pLeft = playerX - PLAYER_W / 2 + 4;
+          var pRight = playerX + PLAYER_W / 2 - 4;
+
+          for (var i = items.length - 1; i >= 0; i--) {
+            var it = items[i];
+            it.y += it.vy * dt;
+            it.el.style.transform = 'translate(' + it.x + 'px,' + it.y + 'px) rotate(' + it.rot + 'deg)';
+            var itemH = it.h || 44;
+            var itemCenterX = it.x + it.w / 2;
+            var caught = it.y + itemH >= catchTop && it.y <= catchBottom &&
+                         itemCenterX >= pLeft - 6 && itemCenterX <= pRight + 6;
+            if (caught) {
+              var cx = itemCenterX, cy = catchTop - 6;
+              if (it.type === 'gal') {
+                combo++;
+                caughtCount++;
+                var pts = 100;
+                score += pts;
+                gal = Math.min(100, gal + 2);
+                popText(cx - 24, cy - 26, '+' + pts, 'plus');
+                if (combo > 0 && combo % 5 === 0) {
+                  score += 50;
+                  popText(cx - 44, cy - 56, 'コンボボーナス +50', 'plus');
+                  soundCombo();
+                } else {
+                  soundCatch();
+                }
+                sparks(cx, cy);
+                bumpPlayer();
+              } else if (it.type === 'oshisama') {
+                combo++;
+                oshisamaCount++;
+                score += 500;
+                gal = Math.min(100, gal + 20);
+                popText(cx - 118, cy - 62, 'お師さま！ +500 ギャル度 +20', 'bonus');
+                if (combo > 0 && combo % 5 === 0) {
+                  score += 50;
+                  popText(cx - 44, cy - 96, 'コンボボーナス +50', 'plus');
+                }
+                soundBonus();
+                sparks(cx, cy);
+                sparks(cx, cy - 18);
+                bumpPlayer();
+              } else {
+                var dmg = currentDamage();
+                damage(dmg, cx - 52, cy - 26, it.type === 'cancer' ? 'キャンサー！ ギャル度 −' + dmg : '華村詩紀！ ギャル度 −' + dmg);
+              }
+              it.el.remove();
+              items.splice(i, 1);
+              updateHUD();
+              if (state !== 'playing') return;
+              continue;
+            }
+            // fell past bottom
+            if (it.y > stageH() + 10) {
+              if (it.type === 'oshisama') {
+                popText(itemCenterX - 62, stageH() - 128, 'お師さまが通り過ぎた…', 'avoid');
+              } else if (it.type === 'gal') {
+                combo = 0;
+                gal -= 8;
+                soundMiss();
+                popText(itemCenterX - 40, stageH() - 128, '取り逃がし… ギャル度 −8', 'minus');
+                updateHUD();
+                if (gal <= 0) { it.el.remove(); items.splice(i, 1); gameOver(); return; }
+              } else {
+                score += 10;
+                popText(itemCenterX - 16, stageH() - 128, '回避 +10', 'avoid');
+                updateHUD();
+              }
+              it.el.remove();
+              items.splice(i, 1);
+            }
+          }
+          rafId = requestAnimationFrame(loop);
+        }
+
+        /* ---------- input ---------- */
+        function pointerToTarget(clientX) {
+          var rect = stage.getBoundingClientRect();
+          targetX = clientX - rect.left;
+        }
+        stage.addEventListener('pointermove', function (e) { pointerToTarget(e.clientX); });
+        stage.addEventListener('pointerdown', function (e) { pointerToTarget(e.clientX); });
+        stage.addEventListener('touchmove', function (e) {
+          if (e.touches.length) pointerToTarget(e.touches[0].clientX);
+        }, { passive: true });
+
+        document.addEventListener('keydown', function (e) {
+          var tag = e.target && e.target.tagName;
+          if (tag === 'INPUT' || tag === 'TEXTAREA') return; // 名前入力中はゲーム操作をしない
+          var k = e.key.toLowerCase();
+          keys[k] = true;
+          if (k === 'arrowleft' || k === 'arrowright' || k === ' ') e.preventDefault();
+          if (k === ' ' && state === 'playing') togglePause();
+          if (k === 'enter' && (state === 'ready' || state === 'over')) startGame();
+        });
+        document.addEventListener('keyup', function (e) { keys[e.key.toLowerCase()] = false; });
+
+        for (var ni = 0; ni < nameInputs.length; ni++) {
+          (function (input) {
+            if (!input) return;
+            input.addEventListener('input', function () { setPlayerName(input.value, input); });
+            input.addEventListener('change', function () { setPlayerName(input.value, input); });
+          })(nameInputs[ni]);
+        }
+        toggleNameBtn.addEventListener('click', function () {
+          showName = !showName;
+          syncToggleButtons();
+          renderBoard();
+        });
+        toggleScoreBtn.addEventListener('click', function () {
+          showScore = !showScore;
+          syncToggleButtons();
+          renderBoard();
+        });
+
+        document.getElementById('startBtn').addEventListener('click', startGame);
+        document.getElementById('retryBtn').addEventListener('click', startGame);
+        document.getElementById('resumeBtn').addEventListener('click', togglePause);
+        pauseBtn.addEventListener('click', function () {
+          if (state === 'playing' || state === 'paused') togglePause();
+        });
+
+        window.addEventListener('resize', function () { clampPlayer(); renderPlayer(); });
+
+        // init position once layout is known
+        playerX = stageW() / 2; targetX = playerX;
+        renderPlayer();
+        updateHUD();
+        syncToggleButtons();
+        renderBoard();
+        loadBoardFromSupabase();
+      })();
+    </script>
+  </body>
+</html>
