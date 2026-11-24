@@ -787,8 +787,8 @@
         /* ---------- scoreboard ---------- */
         /* Supabase 設定（外部公開版）: デプロイ時に実際の値へ置き換える。
            未設定（プレースホルダ）のままや通信失敗時は、従来のメモリ内ボードにフォールバックする。 */
-        const SUPABASE_URL = "__SUPABASE_URL__";
-        const SUPABASE_ANON_KEY = "__SUPABASE_ANON_KEY__";
+        const SUPABASE_URL = "https://pcgfpflulbwczxtpiwrt.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBjZ2ZwZmx1bGJ3Y3p4dHBpd3J0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU0OTc0ODcsImV4cCI6MjExMTA3MzQ4N30.wANwfR9INCbVR7d9r_4IAQEYo3f236kpX4eZ4_fEg9U";
         function supabaseConfigured() {
           return SUPABASE_URL.indexOf('__') !== 0 && SUPABASE_ANON_KEY.indexOf('__') !== 0 &&
             SUPABASE_URL.indexOf('http') === 0;
