@@ -384,6 +384,34 @@
         border: 2px solid #e8930c;
         box-shadow: 0 8px 20px rgba(255,150,0,.38);
       }
+      .result-title.rank-4 {
+        font-size: 24px;
+        color: #fff;
+        background: linear-gradient(180deg, #c084fc 0%, #9333ea 100%);
+        border: 2px solid #7e22ce;
+        box-shadow: 0 8px 20px rgba(147,51,234,.38);
+      }
+      .result-title.rank-5 {
+        font-size: 25px;
+        color: #fff;
+        background: linear-gradient(180deg, #f472b6 0%, #db2777 55%, #9333ea 100%);
+        border: 2px solid #be185d;
+        box-shadow: 0 8px 22px rgba(219,39,119,.42);
+      }
+      .result-title.rank-6 {
+        font-size: 25px;
+        color: #fff;
+        background: linear-gradient(90deg, #ec4899 0%, #f97316 55%, #eab308 100%);
+        border: 2px solid #ea580c;
+        box-shadow: 0 8px 22px rgba(249,115,22,.45);
+      }
+      .result-title.rank-7 {
+        font-size: 21px;
+        color: #fff;
+        background: linear-gradient(90deg, #ec4899 0%, #a855f7 33%, #3b82f6 66%, #22c55e 100%);
+        border: 2px solid #a855f7;
+        box-shadow: 0 10px 26px rgba(168,85,247,.5);
+      }
       .legend {
         text-align: left;
         margin: 14px auto 4px;
@@ -577,6 +605,10 @@
         .result-title.rank-1 { font-size: 18px; }
         .result-title.rank-2 { font-size: 19px; }
         .result-title.rank-3 { font-size: 20px; }
+        .result-title.rank-4 { font-size: 19px; }
+        .result-title.rank-5 { font-size: 19px; }
+        .result-title.rank-6 { font-size: 19px; }
+        .result-title.rank-7 { font-size: 16px; }
         .start-btn { margin-top: 10px; padding: 10px 34px; font-size: 17px; }
         .howto { margin-top: 8px; font-size: 11.5px; line-height: 1.55; }
         .fall.gal-1, .fall.gal-2, .fall.gal-4 { font-size: 33px; }
@@ -1102,7 +1134,11 @@
           { min: 0,     text: 'いつも通りのいのりん' },
           { min: 6001,  text: 'ギャルっぽいいのりん' },
           { min: 10001, text: 'そこそこギャルないのりん' },
-          { min: 23000, text: 'ギャルしか勝たんいのりん' }
+          { min: 23000, text: 'ギャルしか勝たんいのりん' },
+          { min: 25000, text: 'ちょりーっすばいぶすあげてるー？' },
+          { min: 30001, text: 'いのっちギャルすぎてありえんてぃ！' },
+          { min: 40000, text: 'イケイケぎゃるいのっちちょーやばみ！' },
+          { min: 50000, text: 'ぎゃるの化身のいのっちもうばいぶす爆あがりなんですけど！？' }
         ];
         function resultTitleForScore(s) {
           var idx = 0;
